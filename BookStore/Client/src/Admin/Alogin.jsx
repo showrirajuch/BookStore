@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const Alogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('adminToken', data.token);
+        navigate('/admin/home');
+      } else {
+        setError(data.message || 'Access Denied: Invalid credentials');
+      }
+    } catch (err) {
+      setError('Connection refused. Is the server running on port 8000?');
+    }
+  };
+
+  return (
+    <div style={{
+      background: '#000000',
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '2rem',
+      boxSizing: 'border-box'
+    }}>
+      <form onSubmit={handleLogin} style={{
+        background: '#000000',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '3rem 2.5rem',
+        borderRadius: '0px',
+        width: '100%',
+        maxWidth: '420px',
+        color: '#ffffff',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9)',
+        backdropFilter: 'blur(10px)',
+        boxSizing: 'border-box'
+      }}>
+        <h2 style={{ 
+          color: '#ffffff', 
+          marginBottom: '2rem', 
+          textAlign: 'center', 
+          fontWeight: 900, 
+          fontSize: '1.6rem',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase'
+        }}>
+          ADMIN LOGIN
+        </h2>
+        
+        {error && (
+          <div style={{ 
+            color: '#f87171', 
+            background: 'rgba(239, 68, 68, 0.08)', 
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            padding: '0.75rem 1rem', 
+            borderRadius: '0px', 
+            marginBottom: '1.5rem', 
+            fontSize: '0.85rem',
+            textAlign: 'left',
+            letterSpacing: '0.02em'
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: '#a3a3a3', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            Email Address
+          </label>
+          <input 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: '#000000',
+              color: '#ffffff',
+              outline: 'none',
+              boxSizing: 'border-box',
+              fontSize: '1rem',
+              transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = '#ffffff'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
+          />
+        </div>
+
+        <div style={{ marginBottom: '2.5rem', textAlign: 'left' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: '#a3a3a3', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            Password
+          </label>
+          <input 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: '#000000',
+              color: '#ffffff',
+              outline: 'none',
+              boxSizing: 'border-box',
+              fontSize: '1rem',
+              transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = '#ffffff'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
+          />
+        </div>
+
+        <button type="submit" style={{
+          width: '100%',
+          padding: '0.85rem',
+          borderRadius: '0px',
+          background: '#ffffff',
+          color: '#000000',
+          border: '1px solid #ffffff',
+          cursor: 'pointer',
+          fontWeight: '800',
+          fontSize: '0.9rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#000000';
+          e.currentTarget.style.color = '#ffffff';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = '#ffffff';
+          e.currentTarget.style.color = '#000000';
+        }}
+        >
+          Verify Credentials
+        </button>
+
+        <p style={{ textAlign: 'center', marginTop: '1.75rem', marginBottom: 0, color: '#737373', fontSize: '0.85rem' }}>
+          Need admin permissions? <span onClick={() => navigate('/admin/signup')} style={{ color: '#ffffff', cursor: 'pointer', fontWeight: '700', textDecoration: 'underline' }}>Register Account</span>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default Alogin;
